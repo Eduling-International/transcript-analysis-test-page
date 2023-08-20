@@ -9,6 +9,7 @@ async function analyze() {
     if (txt_area) {
       const value = String(txt_area.value.trim());
       if (value.length > 0) {
+        document.getElementById("analyze").disabled = true
         // call api
         const response = await fetch(
           "https://api.develop.eduling.org/api/v1/vocabulary-analysis/test/analyze-text",
@@ -61,9 +62,11 @@ async function analyze() {
         cell4.innerHTML = unknownWord.replace(/\n/g, "<br>");
 
         window.alert("Success");
+        document.getElementById("analyze").disabled = false
       }
     }
   } catch (error) {
+    document.getElementById("analyze").disabled = false
     window.alert(JSON.stringify(error))
     throw error
   }
