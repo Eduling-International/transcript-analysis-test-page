@@ -15,6 +15,11 @@ table, td, th {
   border: 1px solid;
 }
 
+td {
+    max-width: 300px;
+    overflow-wrap: break-word;
+}
+
 table {
     width: 80%;
     border-collapse: collapse;

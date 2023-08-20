@@ -8,11 +8,10 @@ async function analyze() {
     const txt_area = document.getElementById("transcript");
     if (txt_area) {
       const value = String(txt_area.value.trim());
-      console.log(value);
       if (value.length > 0) {
         // call api
         const response = await fetch(
-          "https://api.develop.eduling.org/api/v1/vocabulary-analysis/test-analysis",
+          "https://api.develop.eduling.org/api/v1/vocabulary-analysis/test/analyze-text",
           {
             method: "POST",
             body: JSON.stringify({
@@ -26,25 +25,26 @@ async function analyze() {
         // success
         const resJson = await response.json();
         // parse to table
+        console.log(resJson?.HighFrequency)
         let highFreqMap = "", middleFreqMap = "", lowFreqMap = "", unknownWord = "";
-        if (resJson?.highFreqMap && resJson?.highFreqMap?.length > 0) {
-            resJson.highFreqMap.forEach((item) => {
-                highFreqMap = highFreqMap.concat(`${item.Occurrences} - ${item.Word}\n`)
+        if (resJson?.HighFrequency && resJson?.HighFrequency?.length > 0) {
+            resJson.HighFrequency.forEach((item) => {
+                highFreqMap = highFreqMap.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
             })
         }
-        if (resJson?.middleFreqMap && resJson?.middleFreqMap?.length > 0) {
-            resJson.middleFreqMap.forEach((item) => {
-                middleFreqMap = middleFreqMap.concat(`${item.Occurrences} - ${item.Word}\n`)
+        if (resJson?.MiddleFrequency && resJson?.MiddleFrequency?.length > 0) {
+            resJson.MiddleFrequency.forEach((item) => {
+                middleFreqMap = middleFreqMap.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
             })
         }
-        if (resJson?.lowFreqMap && resJson?.lowFreqMap?.length > 0) {
-            resJson.lowFreqMap.forEach((item) => {
-                lowFreqMap = lowFreqMap.concat(`${item.Occurrences} - ${item.Word}\n`)
+        if (resJson?.LowFrequency && resJson?.LowFrequency?.length > 0) {
+            resJson.LowFrequency.forEach((item) => {
+                lowFreqMap = lowFreqMap.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
             })
         }
-        if (resJson?.unknownWord && resJson?.unknownWord?.length > 0) {
-            resJson.unknownWord.forEach((item) => {
-                unknownWord = unknownWord.concat(`${item.Occurrences} - ${item.Word}\n`)
+        if (resJson?.UnknownWord && resJson?.UnknownWord?.length > 0) {
+            resJson.UnknownWord.forEach((item) => {
+                unknownWord = unknownWord.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
             })
         }
         let table = document.getElementById("analysis-table");
