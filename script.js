@@ -9,7 +9,8 @@ async function analyze() {
     if (txt_area) {
       const value = String(txt_area.value.trim());
       if (value.length > 0) {
-        document.getElementById("analyze").disabled = true
+        document.getElementById("analyze").disabled = true;
+        removeLi();
         // call api
         const response = await fetch(
           "https://api.develop.eduling.org/api/v1/vocabulary-analysis/test/analyze-text",
@@ -26,28 +27,42 @@ async function analyze() {
         // success
         const resJson = await response.json();
         // parse to table
-        console.log(resJson?.HighFrequency)
-        let highFreqMap = "", middleFreqMap = "", lowFreqMap = "", unknownWord = "";
+        console.log(resJson?.HighFrequency);
+        let highFreqMap = "",
+          middleFreqMap = "",
+          lowFreqMap = "",
+          unknownWord = "";
         if (resJson?.HighFrequency && resJson?.HighFrequency?.length > 0) {
-            resJson.HighFrequency.forEach((item) => {
-                highFreqMap = highFreqMap.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
-            })
+          resJson.HighFrequency.forEach((item) => {
+            highFreqMap = highFreqMap.concat(
+              `${item.Occurrences} - ${item.Words.join(",")}\n`
+            );
+          });
         }
         if (resJson?.MiddleFrequency && resJson?.MiddleFrequency?.length > 0) {
-            resJson.MiddleFrequency.forEach((item) => {
-                middleFreqMap = middleFreqMap.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
-            })
+          resJson.MiddleFrequency.forEach((item) => {
+            middleFreqMap = middleFreqMap.concat(
+              `${item.Occurrences} - ${item.Words.join(",")}\n`
+            );
+          });
         }
         if (resJson?.LowFrequency && resJson?.LowFrequency?.length > 0) {
-            resJson.LowFrequency.forEach((item) => {
-                lowFreqMap = lowFreqMap.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
-            })
+          resJson.LowFrequency.forEach((item) => {
+            lowFreqMap = lowFreqMap.concat(
+              `${item.Occurrences} - ${item.Words.join(",")}\n`
+            );
+          });
         }
         if (resJson?.UnknownWord && resJson?.UnknownWord?.length > 0) {
-            resJson.UnknownWord.forEach((item) => {
-                unknownWord = unknownWord.concat(`${item.Occurrences} - ${item.Words.join(",")}\n`)
-            })
+          resJson.UnknownWord.forEach((item) => {
+            unknownWord = unknownWord.concat(
+              `${item.Occurrences} - ${item.Words.join(",")}\n`
+            );
+          });
         }
+
+        fillAwl(resJson?.InAWLWords);
+
         let table = document.getElementById("analysis-table");
         let row = table.insertRow(-1); // insert at the end of the table
 
@@ -62,12 +77,32 @@ async function analyze() {
         cell4.innerHTML = unknownWord.replace(/\n/g, "<br>");
 
         window.alert("Success");
-        document.getElementById("analyze").disabled = false
+        document.getElementById("analyze").disabled = false;
       }
     }
   } catch (error) {
-    document.getElementById("analyze").disabled = false
-    window.alert(JSON.stringify(error))
-    throw error
+    document.getElementById("analyze").disabled = false;
+    window.alert(JSON.stringify(error));
+    throw error;
+  }
+}
+
+function removeLi() {
+  const awl = document.getElementById("awl");
+
+  while (awl.firstChild) {
+    awl.removeChild(awl.firstChild);
+  }
+}
+
+function fillAwl(words) {
+  if (words && words.length > 0) {
+    const awl = document.getElementById("awl");
+
+    words.forEach(word => {
+      const li = document.createElement("li");
+      li.textContent = word;
+      awl.appendChild(li);
+    })
   }
 }
